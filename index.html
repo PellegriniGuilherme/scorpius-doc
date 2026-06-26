@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#252936;--border:#2e3347;--text:#e4e6f0;--muted:#8b8fa8;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--yellow:#eab308;--red:#ef4444;--orange:#f97316;--cyan:#06b6d4}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.5;padding:20px}
+.container{max-width:1400px;margin:0 auto}
+h1,h2,h3{margin-bottom:0}
+header{text-align:center;padding:28px;background:var(--surface);border-radius:14px;border:1px solid var(--border);margin-bottom:20px}
+header h1{font-size:1.9rem;font-weight:800;color:var(--accent2);margin-bottom:6px}
+header p{color:var(--muted);font-size:0.9rem}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:0.72rem;font-weight:600}
+.bg-green{background:rgba(34,197,94,.15);color:var(--green)}
+.bg-yellow{background:rgba(234,179,8,.15);color:var(--yellow)}
+.bg-red{background:rgba(239,68,68,.15);color:var(--red)}
+.bg-orange{background:rgba(249,115,22,.15);color:var(--orange)}
+.bg-accent{background:rgba(99,102,241,.2);color:var(--accent2)}
+.bg-cyan{background:rgba(6,182,212,.15);color:var(--cyan)}
+section{background:var(--surface);border-radius:14px;border:1px solid var(--border);margin-bottom:18px;overflow:hidden}
+.sh{padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sh h2{font-size:1rem;font-weight:700}
+.sb{padding:16px 20px}
+table{width:100%;border-collapse:collapse;font-size:0.82rem}
+th{text-align:left;padding:8px 12px;background:var(--surface2);color:var(--muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:8px 12px;border-bottom:1px solid rgba(46,51,71,.4);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(99,102,241,.04)}
+.td-id{font-family:'Fira Code',monospace;font-size:.75rem;color:var(--cyan);white-space:nowrap}
+.td-agent{white-space:nowrap}
+.td-status{white-space:nowrap}
+.td-task{color:var(--text)}
+.summary-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--surface2);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--border)}
+.card .n{font-size:2.2rem;font-weight:800;color:var(--accent2);line-height:1}
+.card .l{font-size:.75rem;color:var(--muted);margin-top:4px}
+.phase-section{margin-bottom:8px}
+.phase-header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:8px;cursor:pointer;border:1px solid var(--border);user-select:none}
+.phase-header:hover{background:rgba(99,102,241,.08)}
+.phase-header h3{font-size:.92rem;font-weight:700;flex:1}
+.phase-header .toggle{margin-left:auto;color:var(--muted);font-size:.8rem;transition:transform .2s}
+.phase-header.open .toggle{transform:rotate(90deg)}
+.phase-body{display:none;padding:4px 0}
+.phase-body.open{display:block}
+.priority-red{color:var(--red)}
+.priority-orange{color:var(--orange)}
+.priority-yellow{color:var(--yellow)}
+.rules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:14px}
+.rule-card{background:var(--surface2);border-radius:10px;padding:13px;border:1px solid var(--border)}
+.rule-card h4{font-size:.85rem;font-weight:700;margin-bottom:5px;color:var(--accent2)}
+.rule-card .meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.rule-card .desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.alert-box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:12px 16px;margin-bottom:16px}
+.alert-box h4{font-size:.88rem;font-weight:600;margin-bottom:4px}
+.alert-box p{font-size:.8rem;color:var(--muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border)}
+.toc a{display:inline-block;padding:3px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:.78rem;color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--accent2);border-color:var(--accent)}
+.nav{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nav a{padding:4px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;font-size:.8rem;color:var(--muted);text-decoration:none}
+.nav a.active{color:var(--accent2);border-color:var(--accent)}
+.backtop{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#fff;width:36px;height:36px;border-radius:50%;text-align:center;line-height:36px;font-size:1.1rem;text-decoration:none;opacity:.7}
+.backtop:hover{opacity:1}
+.countries{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.7rem;font-weight:600}
+.tag-red{background:rgba(239,68,68,.15);color:var(--red)}
+.tag-orange{background:rgba(249,115,22,.15);color:var(--orange)}
+.tag-yellow{background:rgba(234,179,8,.15);color:var(--yellow)}
+.tag-cyan{background:rgba(6,182,212,.15);color:var(--cyan)}
+.tag-green{background:rgba(34,197,94,.15);color:var(--green)}
+.tag-blue{background:rgba(99,102,241,.15);color:var(--accent2)}
+  @media (max-width:768px){
+    html{font-size:12px}
+    body{padding:8px!important}
+    .container{max-width:100%!important;padding:0!important}
+    .card{padding:10px!important;margin-bottom:8px!important}
+    .stack-grid{grid-template-columns:1fr!important;gap:8px!important}
+    .task-table{font-size:11px!important;display:block!important;overflow-x:auto!important;white-space:nowrap!important}
+    .task-table tbody{display:block!important;width:100%!important}
+    .task-table tr{display:flex!important;flex-direction:row!important;align-items:center!important;border-bottom:1px solid var(--border)!important;padding:4px 0!important;width:100%!important}
+    .task-table td{display:inline-block!important;vertical-align:middle!important;padding:2px 4px!important;font-size:10px!important;line-height:1.2!important}
+    .task-table th{display:none!important}
+    .task-table .td-id{min-width:50px!important;max-width:50px!important;font-weight:700!important;white-space:nowrap!important}
+    .task-table .td-desc{min-width:0!important;flex:1!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+    .task-table .td-agent{min-width:55px!important;max-width:55px!important}
+    .task-table .td-status{min-width:50px!important;max-width:50px!important}
+    .task-table .priority-red,.task-table .priority-orange,.task-table .priority-yellow{min-width:45px!important;max-width:45px!important;text-align:center!important;padding:2px 2px!important}
+    .badge{font-size:9px!important;padding:1px 3px!important}
+    .rules-grid{grid-template-columns:1fr!important;gap:8px!important}
+    .rule-card{padding:10px!important}
+    .sh,.sb{margin:8px 0!important;border-radius:8px!important}
+    .sh h2{font-size:1rem!important;padding:10px 12px!important}
+    .meta{flex-wrap:wrap;gap:4px!important}
+    .tag{font-size:9px!important;padding:1px 4px!important}
+    .alert-box{padding:10px 12px!important}
+    .alert-box h4{font-size:.85rem!important}
+    .priority-red::before{content:"🔴 "}
+    .priority-orange::before{content:"🟠 "}
+    .priority-yellow::before{content:"🟡 "}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+<h1>🏛️ GoldSystem — Tarefas & Regras de Negócio</h1>
+<p>GoldSystem ERP Migration &nbsp;|&nbsp; 153 tasks · 13 fases · 295h estimadas &nbsp;|&nbsp; Atualizado 26/06/2026 15:03 GMT-3</p>
+</header>
+
+<!-- DECISÕES -->
+<section>
+<div class="sh"><h2>⚡ Decisões Oficiais — Stack Atualizado</h2></div>
+<div class="sb">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(239,68,68,.1);border-radius:8px;color:#fca5a5">🐘 PHP 8.4</div><div class="l">Laravel 13</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(6,182,212,.1);border-radius:8px;color:var(--cyan)">⚛️ React 19</div><div class="l">SPA + Vite</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(34,197,94,.1);border-radius:8px;color:var(--green)">🐬 MySQL 8</div><div class="l">Banco Relacional</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(249,115,22,.1);border-radius:8px;color:var(--orange)">🔧 Forge</div><div class="l">Deploy only</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(99,102,241,.15);border-radius:8px;color:var(--accent2)">📬 Horizon</div><div class="l">Queue Management</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(99,102,241,.15);border-radius:8px;color:var(--accent2)">🛡️ Spatie</div><div class="l">RBAC (Seeder)</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(99,102,241,.15);border-radius:8px;color:var(--accent2)">🔑 Sanctum</div><div class="l">Auth (cookie)</div></div>
+<div class="card"><div class="n" style="font-size:1.2rem;padding:8px;background:rgba(99,102,241,.15);border-radius:8px;color:var(--accent2)">📦 2 Repos</div><div class="l">api + web</div></div>
+</div>
+</div>
+</section>
+
+<!-- STACK -->
+<section>
+<div class="sh"><h2>⚙️ Stack Tecnológico — goldsystem-api + goldsystem-web</h2></div>
+<div class="sb">
+<div class="summary-cards">
+<div class="card"><div class="n">🐘</div><div class="l">Laravel 13</div></div>
+<div class="card"><div class="n">🐬</div><div class="l">MySQL 8</div></div>
+<div class="card"><div class="n">🔴</div><div class="l">Redis 7</div></div>
+<div class="card"><div class="n">📬</div><div class="l">Horizon</div></div>
+<div class="card"><div class="n">🔑</div><div class="l">Sanctum</div></div>
+<div class="card"><div class="n">🛡️</div><div class="l">spatie/permission</div></div>
+<div class="card"><div class="n">🏢</div><div class="l">Stancl/Tenancy</div></div>
+<div class="card"><div class="n">🔧</div><div class="l">Laravel Forge</div></div>
+<div class="card"><div class="n">🧪</div><div class="l">Pest.php</div></div>
+<div class="card"><div class="n">📊</div><div class="l">PHPStan + Pint</div></div>
+<div class="card"><div class="n">⚛️</div><div class="l">React 19 + Vite</div></div>
+<div class="card"><div class="n">🎨</div><div class="l">Tailwind CSS</div></div>
+<div class="card"><div class="n">🧩</div><div class="l">shadcn/ui + Radix</div></div>
+<div class="card"><div class="n">⚡</div><div class="l">Zustand + React Query</div></div>
+<div class="card"><div class="n">✅</div><div class="l">Vitest + Playwright</div></div>
+<div class="card"><div class="n">📋</div><div class="l">ESLint + TypeScript</div></div>
+</div>
+</div>
+</section>
+
+<!-- TABELA MAESTRA DE TASKS -->
+<section>
+<div class="sh"><h2>📋 Tarefas — 153 Tasks por Fase</h2></div>
+<div class="sb">
+<table>
+<thead>
+<tr>
+<th>ID</th><th>Tarefa</th><th>Agent</th><th>Status</th><th>Prioridade</th>
+</tr>
+</thead>
+<tbody>
+<!-- F0 -->
+<tr><td><span class="badge bg-orange">F0</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F0 — Fundação (8 tasks) · Semanas 1-2 · Setup infraestrutura e arquitetura base</td></tr>
+<tr><td class="td-id">F0-01</td><td>Setup Laravel 13 + MySQL + Redis</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-02</td><td>Setup Stancl/Tenancy (database-per-tenant)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-03</td><td>Auth: Sanctum + TOTP MFA</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-04</td><td>Setup React 19 + Vite + TypeScript + Tailwind</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-05</td><td>Setup Zustand + React Query + Axios</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-06</td><td>shadcn/ui + design tokens</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F0-07</td><td>CI (GitHub Actions) + Forge deploy</td><td class="td-agent"><span class="badge bg-accent">Atlas</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F0-08</td><td>Migração do schema public</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<!-- F1 -->
+<tr><td><span class="badge bg-orange">F1</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F1 — Administrativo (29 tasks) · Semanas 3-4 · Módulo com menor risco — validação da stack</td></tr>
+<tr><td class="td-id">F1-01</td><td>Migrar `funcionarios` + soft delete</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-02</td><td>Migrar `estabelecimentos`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-03</td><td>Migrar `cargos` + níveis de acesso (RN-A01)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-04</td><td>Migrar `formas_pagamento` (RN-FP01/02)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-05</td><td>Migrar `parametros_venda` singleton (RN-P01)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-06</td><td>Migrar `parametros_caixa` singleton (RN-P02)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-07</td><td>Tela de login + logout</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-08</td><td>Dashboard administrativo</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-09</td><td>CRUD funcionários (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-09b</td><td>Migrar `comissao` (tipos de comissão) + vínculo cargo + RN-V20</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-10</td><td>Migrar `classe_acesso` + `funcionario_classe` + RN-A08</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-11</td><td>Migrar `referencia_funcionario` + RN-A09</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-12</td><td>Playwright: CRUD funcionários</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-13</td><td>Migrar `parametro_renegociacao` (desconto max)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-14</td><td>Migrar `parametros_planodecontas` singleton + auditoria</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F1-15</td><td>Migrar `parametro_telaprincipal` singleton (RN-A10)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-16</td><td>Migrar `comissao_cargo_familia` + `comissao_meta` + RN-V16</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-17</td><td>Migrar `parametros_juros` + RN-FP18</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-18</td><td>Migrar `parametros_pedidocompra` singleton (MostrarPedra)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-19</td><td>Migrar `parametros_consignacao` singleton + auditoria</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-20</td><td>Migrar `parametro_contacorrente` singleton + auditoria + RN-FP22</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-21</td><td>Migrar `consorcio_grupo` + `consorcio_sorteio` + `consorcio_lance` + `consorcio_membro` + RN-CO01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-22</td><td>Migrar `parametros_nota` singleton + auditoria + RN-FP25</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-23</td><td>Migrar `parametro_cupomfiscal` (por loja: JetLoja, Solucao) + RN-FP25</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-24</td><td>Migrar `tela_principal` (Arquivo, Titulo, Caminho, icone) + RN-A10</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-25</td><td>Migrar `funcionario_tela_principal` (vínculo func×tela, ordem) + RN-A10</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-26</td><td>Migrar `portador` (cartão/forma recebimento) + RN-FP32</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F1-27</td><td>Migrar `controle_ponto` (entrada/saída/almoco, horas extras) + RN-A04</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-28</td><td>Migrar `parametros_parcela` (prazo/prazos, periodicidade, tipos) + RN-FP33</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F1-29</td><td>Migrar `tipo_bloqueio` (SPC, devedor, etc.) + RN-CL19</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<!-- F2 -->
+<tr><td><span class="badge bg-accent">F2</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F2 — Cliente + Vale (11 tasks) · Semanas 5-6 · CRM básico + sistema de vale</td></tr>
+<tr><td class="td-id">F2-01</td><td>Migrar `clientes` + RN-CL01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F2-02</td><td>Migrar `cliente_enderecos`, `cliente_telefones`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F2-03</td><td>Sistema de vale (CRUD + bafor) + RN-CL10</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F2-04</td><td>Limite de crédito + RN-CL03</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F2-05</td><td>Tela de clientes (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F2-06</td><td>Tela de vale (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F2-07</td><td>Migrar `cliente_dependentes` + RN-CL13</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F2-08</td><td>Migrar `cliente_conjuge` + RN-CL14</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F2-09</td><td>Migrar `cliente_perfil` + `cliente_acao` + RN-CL15</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F2-10</td><td>Migrar `cliente_documentos` (uploads) + RN-CL16</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F2-11</td><td>Playwright: módulos cliente</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F3 -->
+<tr><td><span class="badge bg-accent">F3</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F3 — Estoque (19 tasks) · Semanas 7-9 ·F3 — Estoque (19 tasks) · Semanas 7-9 · Módulo mais complexo — impacta compras, vendas e financeiro</td></tr>
+<tr><td class="td-id">F3-01</td><td>Migrar `produtos` + `produto_estoque` + RN-E01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F3-02</td><td>Migrar `familias`, `marcas`, `fabricantes`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-03</td><td>Migrar `metais`, `moedas` (cotação)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F3-04</td><td>Migrar `pedidos_compra` + itens</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-05</td><td>Migrar `inventario`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-06</td><td>Migrar `ordens_servico` + `prestador` + `prestador_ordemservico` + RN-E02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-06b</td><td>Migrar `nota_ajuste` + `nota_ajuste_produto` + RN-E10</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-07</td><td>Busca de CEP (via BrasilAPI)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F3-08</td><td>Tela de produtos (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F3-09</td><td>Tela de estoque (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-10</td><td>Tela de pedidos de compra (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-11</td><td>Playwright: módulo estoque</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-12</td><td>Migrar `parametros_ordemservico` singleton + RN-OS01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F3-13</td><td>Migrar `medida_armacao` + `tamanho_armacao` + RN-OPT01 + RN-OPT04</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-14</td><td>Migrar `lente_codigobarra` + `lente_perda` + RN-OPT02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-15</td><td>Migrar `nota_transferencia` + RN-E11</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-16</td><td>Migrar `parametros_entrada` singleton + RN-FP26</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F3-17</td><td>Migrar `venda_ordemservico` + `tipo_servico` + `status_servico` + RN-E12 + RN-A10</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F3-18</td><td>Migrar `material_armacao` + RN-OPT05</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F3-19</td><td>Migrar `cor_mostrador` + `funcionamento_relogio` + `caixa_relogio` + `marca_relogio` + `pulseira_relogio` + `modelo_relogio` + RN-REL01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<!-- F4 -->
+<tr><td><span class="badge bg-accent">F4</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F4 — Financeiro (21 tasks) · Semanas 10-12 · 🔴 Dinheiro real — máxima atenção</td></tr>
+<tr><td class="td-id">F4-01</td><td>Migrar `contas_pagar` + workflow (RN-FP01)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-02</td><td>Migrar `contas_receber` + workflow (RN-FP09)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-03</td><td>Migrar `despesa` + `nota_fiscal_despesa` + `parcela_nota_fiscal` + RN-FP17</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-04</td><td>Migrar `ctacorrente` + `conta_lancamento` + RN-FP15</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-04b</td><td>Migrar `altera_parcela` + `parcela_prorrogacao` + RN-FP23/FP24</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-05</td><td>Migrar `conciliacao_cartao`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-06</td><td>Dashboard financeiro</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-07</td><td>Tela de contas a pagar (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-08</td><td>Tela de contas a receber (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-09</td><td>Tela de despesas (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-10</td><td>Migrar `cheque` + `status_cheque` + workflow + RN-CH01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-11</td><td>Migrar `bordero` + `bordero_duplicata` + RN-CH02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-12</td><td>Tela de gestão de cheques (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-13</td><td>Tela de borderô (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-14</td><td>Migrar `fornecedor` + `fornecedor_endereco` + `fornecedor_contato` + RN-FP20</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-15</td><td>Tela de fornecedores (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-16</td><td>Playwright: módulo financeiro</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-17</td><td>Migrar `natureza_operacao` + `indexador` + `moeda` + RN-FP21</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-18</td><td>Migrar `conta` (conta bancária real) + `conta_lancamento` + RN-FP28</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-19</td><td>Migrar `parametro_caixa_contafp` + `parametro_caixa_contageralfp` + RN-FP01b</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F4-20</td><td>Migrar `tributacao_a` + `tributacao_b` + `ncm` + RN-FP34</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F4-21</td><td>Migrar `bordero_cheque` + `conta_pagamento` + RN-CH05 + RN-FP37</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<!-- F5 -->
+<tr><td><span class="badge bg-accent">F5</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F5 — Vendas + Caixa (11 tasks) · Semanas 13-15 · ⚠️ Módulo mais usado — maior esforço</td></tr>
+<tr><td class="td-id">F5-01</td><td>Migrar `vendas` + `venda_itens` + `finaliza_venda` + `venda_forma_pagamento` + RN-V01/02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-02</td><td>Migrar `consignacao` + `consignacao_produto` + controle prazo</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F5-03</td><td>Migrar `devolucao` + todas as tabelas de cancelamento + RN-V12 + RN-V19</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-03b</td><td>Migrar `produto_nota_fiscal` + `entrada_produto` + `finaliza_nota_fiscal` + `transporte` + RN-FP35</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-04</td><td>Migrar `carne` (parcelas)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F5-05</td><td>Migrar `tabela_venda`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F5-06</td><td>PDV — tela de venda</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-07</td><td>Carrinho + split payments</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F5-08</td><td>NFC-e / SAT — estrutura (futuro)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F5-09</td><td>Migrar `caixa_abertura` + `tela_caixa` + `acerto_caixa` + RN-CX01/02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-10</td><td>Tela de fechamento de caixa</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F5-11</td><td>Playwright: módulo venda + caixa</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F6 -->
+<tr><td><span class="badge bg-accent">F6</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F6 — Relatórios (6 tasks) · Semanas 16-17 · Decisivos para gestão da loja</td></tr>
+<tr><td class="td-id">F6-01</td><td>Migrar relatórios legados</td><td class="td-agent"><span class="badge bg-yellow">Scribe</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F6-02</td><td>Dashboard geral (vendas + financeiro)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F6-03</td><td>Relatório de vendas (por período, vendedor)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F6-04</td><td>Relatório de estoque (baixo + valorização)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F6-05</td><td>Relatório financeiro (DRE simples)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F6-06</td><td>Playwright: relatórios</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<!-- F7 -->
+<tr><td><span class="badge bg-accent">F7</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F7 — Migração de Dados (12 tasks) · Semanas 18-20 · MySQL legacy → MySQL novo</td></tr>
+<tr><td class="td-id">F7-01</td><td>Script ETL: clientes</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F7-02</td><td>Script ETL: produtos + estoque</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F7-03</td><td>Script ETL: vendas (últimos 12 meses)</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F7-04</td><td>Script ETL: financeiro</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F7-05</td><td>Validação de integridade pós-migração</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F7-06</td><td>Teste de regressão no novo sistema</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-07</td><td>Migrar `venda_ant` + `parcela_venda_ant` + RN-V15</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-08</td><td>Migrar `nota_fiscal` + `nota_fiscal_dif_valor` + `impressao_spc` + `cliente_atraso`</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-09</td><td>Migrar `cancelamento_venda` + `cancelamento_vendaant` + RN-COB05</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-10</td><td>Migrar `historico_retirascp` + RN-COB04</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-11</td><td>Migrar `venda_cobranca` + `parcela_venda_cob` + `recebimento_parcelacob` + `recebimento` tipo cobrança + RN-COB06</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F7-12</td><td>Migrar `cancelamento_recebimento` + `historico_recebimentocliente` + RN-COB07</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F8 -->
+<tr><td><span class="badge bg-accent">F8</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F8 — Go-Live + Cutover (3 tasks) · Semanas 21-22</td></tr>
+<tr><td class="td-id">F8-01</td><td>Treinamento da equipe</td><td class="td-agent"><span class="badge bg-accent">Atlas+Scribe</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F8-02</td><td>Corte (legacy off / new on)</td><td class="td-agent"><span class="badge bg-accent">Atlas</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F8-03</td><td>Monitoramento pós-go-live</td><td class="td-agent"><span class="badge bg-accent">Atlas</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F9 -->
+<tr><td><span class="badge bg-accent">F9</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F9 — Receituário (5 tasks) · Semanas 17-18 · Módulo prescrições ópticas — fluxo completo de laboratório</td></tr>
+<tr><td class="td-id">F9-01</td><td>Migrar `medico` + RN-REC01</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F9-02</td><td>Migrar `laboratorio` + `situacao_laboratorio` + RN-REC02</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F9-03</td><td>Migrar `receituario` + `status_receituario` + `altera_receituario` + RN-REC03</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F9-04</td><td>Tela de receituário (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F9-05</td><td>Playwright: módulo receituário</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F10 -->
+<tr><td><span class="badge bg-accent">F10</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F10 — Renegociação + Comissão (8 tasks) · Semanas 17-18</td></tr>
+<tr><td class="td-id">F10-01</td><td>Migrar `cheque_renegociacao` + `parcela_venda_renegociacao` + `venda_renegociacao_cancelada` + RN-V17</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-02</td><td>Workflow de renegociação: cancela originais, gera novos parcels/cheques</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F10-03</td><td>Migrar `comissao_meta` + `comissao_meta_individual` + RN-V16</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-04</td><td>Migrar `comissao_cargo_secao` + RN-V21</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-05</td><td>Migrar `comissao_fator` (fator mínimo/máximo) + RN-V22</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-06</td><td>Tela de renegociação (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-07</td><td>Tela de metas e comissão (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F10-08</td><td>Playwright: módulo renegociação + comissão</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<!-- F11 -->
+<tr><td><span class="badge bg-accent">F11</span></td><td colspan=4 style="font-weight:700;background:var(--surface2);padding:6px 12px">F11 — Parâmetros + Consórcio + Cadastrais (16 tasks) · Semanas 4-5</td></tr>
+<tr><td class="td-id">F11-01</td><td>Tela de `parametro_contacorrente` (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-02</td><td>Tela de consórcio grupos (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F11-03</td><td>Tela de transferência entre lojas (web)</td><td class="td-agent"><span class="badge bg-cyan">Nexus</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F11-04</td><td>Playwright: módulos parâmetro + consórcio + transferência</td><td class="td-agent"><span class="badge bg-green">Sentinel</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-05</td><td>Migrar `transportadora` + vínculo `nota_fiscal` + RN-F07</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-06</td><td>Migrar `receita_bruta` + `receita_bruta_loja` + RN-FP27</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-07</td><td>Migrar `status_receituario` (TelaPrincipal flag) + `altera_receituario` + RN-E12</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-orange">🟠 Alta</td></tr>
+<tr><td class="td-id">F11-08</td><td>Migrar `icms` (UF, aliquota, FCP, reduções) + RN-FP29</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F11-09</td><td>Migrar `unidade_compra` + `unidade_venda` + RN-E14</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-10</td><td>Migrar `classificacao_fiscal` + RN-FP30</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-red">🔴 Crítica</td></tr>
+<tr><td class="td-id">F11-11</td><td>Migrar `profissao` + `situacao` + `categoria_cliente` + RN-CL17</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-12</td><td>Migrar `acoes_cliente` + `configurar_cartas` + RN-CL18</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-13</td><td>Migrar `comissao_prazo_desconto` + RN-V23</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-14</td><td>Migrar `menu_funcionario` + `historico_cotacao` + RN-A11 + RN-FP31</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-15</td><td>Migrar `cotacao_metal` + `historico_cotacao_metal` + RN-E15</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+<tr><td class="td-id">F11-16</td><td>Migrar `moeda_compra` + `moeda_venda` + RN-FP36</td><td class="td-agent"><span class="badge bg-red">Vulcan</span></td><td class="td-status"><span class="badge bg-yellow">⬜ pending</span></td><td class="priority-yellow">🟡 Média</td></tr>
+</tbody></table>
+</div>
+</section>
+<!-- REGRAS DE NEGÓCIO -->
+<section>
+<div class="sh"><h2>📖 Regras de Negócio — 50+ RNs por Módulo</h2></div>
+<div class="sb">
+
+<div class="alert-box"><h4>🔴 Críticas</h4><p>Se perdidas, o negócio para ou há perda financeira. Implementação prioritária.</p></div>
+
+<div class="rules-grid">
+
+<div class="rule-card">
+<h4>🔴 RN-A01 — Controle de acesso por nível</h4>
+<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">3 níveis de acesso: Nível 1 (básico), Nível 2 (normal), Nível 3 (avançado). Cada tela verifica nível antes de exibir. Nível 3 = operações administrativas sensíveis.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-A02 — Soft delete universal</h4>
+<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Nenhum registro deletado fisicamente. Todas exclusões = Ativo=0. Mantém DataAlteracao + IdFuncionario responsável.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-P01 — Singleton parametros_venda + auditoria</h4>
+<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Tabela única com limite crédito, desconto, senhas. Alterações exigem Motivo + geram log.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-P02 — Singleton parametros_caixa + auditoria</h4>
+<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Tabela única com bloqueio, limite retirada, conta despesa. Alterações exigem Motivo + geram log.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CL01 — CPF como identificador único</h4>
+<div class="meta"><span class="tag tag-red">Cliente</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">CPF é o identificador principal do cliente. Uniqueness validado por loja. Sem dígito verificador no legado.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CL06 — Tipos de bloqueio de cliente</h4>
+<div class="meta"><span class="tag tag-red">Cliente</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Múltiplos tipos: SPC, inadimplente, devedor, fraudador. Bloqueio impede vendas a prazo quando ativo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-E01 — Controle de estoque por loja</h4>
+<div class="meta"><span class="tag tag-red">Estoque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Cada produto tem estoque gerenciado por loja (estoque.IdLoja). Saldo independente entre lojas. Transferências movem fisicamente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-E02 — Produto identificado por código + loja</h4>
+<div class="meta"><span class="tag tag-red">Estoque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">produto.IdLoja + produto.Codigo = identificador único. Mesmo código em lojas diferentes = itens diferentes.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-E07 — Rastreabilidade de entradas e saídas</h4>
+<div class="meta"><span class="tag tag-red">Estoque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Toda movimentação gera registro em nota_fiscal, venda, devolucao, nota_transferencia, nota_ajuste ou consignacao. Estoque ajustado via notas, nunca direto.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-E08 — NF entrada com divergência bloqueia fechamento</h4>
+<div class="meta"><span class="tag tag-red">Estoque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Se valor real ≠ valor esperado, registra em nota_fiscal_dif_valor e impede fechamento até resolução manual.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP01 — Cadastro de contas a pagar</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Conta criada automaticamente de nota_fiscal (fornecedor) ou manualmente. Campos: IdConta, IdLoja, IdFornecedor, IdTipo, Valor, DataVencimento, DataPagamento, Situacao.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP02 — Baixa manual de conta a pagar</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Usuário registra pagamento: data, valor, forma. Sistema marca DataPagamento + Situacao=P. Sem baixa automática.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP06 — Criação automática de parcelas na venda</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Ao fechar venda, cria automaticamente parcelas em parcela + parcela_venda. Cada uma: DataVencimento, Valor, Juros, Multa, Situacao.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP07 — Situação de parcela em 3 estágios</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">A = aberta (em aberto). P = paga. C = cancelada. Estágio 'aberta' = cliente ainda deve.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-V01 — Fechamento de venda em 3 estágios</h4>
+<div class="meta"><span class="tag tag-red">Venda</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Aberta (Fechada=0,Baixa=0) → Fechada (Fechada=1,Baixa=0) → Baixada (Fechada=1,Baixa=1).</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-V02 — Criação automática de parcelas no fechamento</h4>
+<div class="meta"><span class="tag tag-red">Venda</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Ao fechar (Fechada=1), cria automaticamente parcelas em parcela com base na tabela_venda selecionada.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CX01 — Um caixa aberto por funcionário por vez</h4>
+<div class="meta"><span class="tag tag-red">Caixa</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Só pode ter um caixa aberto simultaneamente. Verifica caixa.Aberto=1 antes de permitir abertura.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CX02 — Fechamento bloqueado com operações pendentes</h4>
+<div class="meta"><span class="tag tag-red">Caixa</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">FechaCaixa só permite se não houver OS aberta com sinal, transferência em aberto ou venda a prazo pendente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CH01 — Workflow de estados do cheque</h4>
+<div class="meta"><span class="tag tag-red">Cheque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">4 estados: 1=pendente, 2=compensado, 3=devolvido, 4=cancelado. DataPrevista=DataCadastro → baixa automática.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CH02 — Borderô: agrupamento de cheques</h4>
+<div class="meta"><span class="tag tag-red">Cheque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Múltiplos cheques agrupados em bordero para envio ao banco. Cada bordero registra cheques, banco e data.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CO01 — Consórcio: grupos, membros, sorteio, contemplação</h4>
+<div class="meta"><span class="tag tag-red">Consórcio</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Workflow: inscrição → lance → sorteio → contemplação → pagamento da diferença → saída. Lance mínimo para participar.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP21 — Natureza de operação com indexadores e moedas</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">natureza_operacao com indexadores, IdMoeda, IdCotacao, Fator, Margem. Essencial para cálculo de preços.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP23 — Alteração de parcela exige senha com log</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Alterar desconto, data ou observação exige senha libger/libcob. Gera registro em altera_parcela com IdParcela, IdFuncionario, Motivo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP24 — Extensão de prazo de parcela com histórico</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">parcela_prorrogacao registra cada extensão: IdParcela, IdFuncionario, DataVencParc (original), DataPrevista (nova). Múltiplas prorrogações permitidas.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP28 — Conta bancária real da empresa (≠ ctacorrente)</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">conta = conta bancária real. INSERT gera registro em conta_lancamento com Saldo, Historico, Data/Hora.≠ ctacorrente (cliente/fornecedor).</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP29 — ICMS por UF com partilha</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">icms por UF com aliquota interna, FCP, reduções. Essencial para NF-e multi-estado.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP34 — Tributação A/B com CST/CSOSN + NCM</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">tributacao_a/b + ncm com aliquotas. Sem isso, NF-e rejeitada pelo SEFAZ.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-FP35 — NF entrada com itens + transporte + finalização</h4>
+<div class="meta"><span class="tag tag-red">Financeiro</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Workflow: cria NF → inclui itens → informa transporte → finaliza. Bloqueio por divergência.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-V12 — Devolução com estorno automático de estoque</h4>
+<div class="meta"><span class="tag tag-red">Venda</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Cancelamento/devolução gera devolucao + devolucao_produto e retorna produtos ao estoque automaticamente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-V15 — Tabela venda_ant para vendas anteriores</h4>
+<div class="meta"><span class="tag tag-red">Venda</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Vendas do sistema anterior em tabela separada. Parcelas em atraso alimentam cobrança e SPC.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-V17 — Renegociação: cancela originais e gera novos</h4>
+<div class="meta"><span class="tag tag-red">Venda</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Cancela venda original + pagamentos, gera novas parcelas ou cheques. Transação atômica com rollback.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CO02 — Consórcio: lance mínimo e quitação automática</h4>
+<div class="meta"><span class="tag tag-red">Consórcio</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Membro precisa ter quitado lance para participar do sorteio. Sistema calcula diferença de lance.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB01 — Processo de cobrança com cálculo de juros</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Calcula juros por atraso: Carência, Tipo (PORCENTAGEM/FIXO), Periodicidade, DiasLimite. Aplica a venda e venda_ant.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB02 — Alteração de status para SPC</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Ao marcar para SPC: atualiza cliente.IdTipoBloqueio, insere cliente_status, marca parcela.Baixa=1, gera impressao_spc.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB04 — SPC: histórico de inclusão/exclusão via historico_retirascp</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Tabela temporária controle clientes em SPC. Lógica: insere clientes com parcelas abertas em atraso + tipo_bloqueio.SPC=1. Remove quem quitou.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB05 — Cancelamento de venda: auditoria + PDF</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Insere em cancelamento_venda com IdParcela, IdFuncionario, IdLoja, Motivo, DataExclusao. Gera PDF. Só cancela Baixa=0 e Ativo=1.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB06 — Sistema de cobrança separado (venda_cobranca)</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Workflow paralelo ao de venda normal. Gerado pela cobradora. Diferencia-se da venda normal porque não gera nova venda.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-COB07 — Cancelamento de recebimento: rastreia clientes afetados</h4>
+<div class="meta"><span class="tag tag-red">Cobrança</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Insere em cancelamento_recebimento. Popula historico_recebimentocliente para rastrear clientes afetados. Reverte Baixa=0. Exige senha libger.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CH04 — Borderô: bordero_duplicata vínculo borderô × duplicatas</h4>
+<div class="meta"><span class="tag tag-red">Cheque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Tabela N:N entre bordero e parcela. Filtra Tipo=2 (cheques) e Ativo=1. Permite cancelar borderô sem perder vínculo histórico.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-CH05 — Borderô: bordero_cheque (≠ bordero_duplicata)</h4>
+<div class="meta"><span class="tag tag-red">Cheque</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">bordero_cheque = N:N bordero × cheque (não via duplicatas). Campos: IdBordero, IdCheque, ValorBruto, ValorLiquido, Taxa. Ao compensar: DataCompensacao=NOW().</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-F07 — Transportadora vinculada à nota fiscal</h4>
+<div class="meta"><span class="tag tag-red">Fiscal</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">transportadora vinculada via IdTransportadora. Se não houver, nota pode ser emitida sem frete (Frete por Conta = 9).</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-REC01 — Validação de CRM de médico</h4>
+<div class="meta"><span class="tag tag-red">Receituário</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">CRM único na base (medico.CRM). Validação via query antes do INSERT e via AJAX antes da submissão.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-R01 — Permissão por menu_funcionario</h4>
+<div class="meta"><span class="tag tag-red">Relatório</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Cada link/relatório condicional a $arr[IdMenu] verificado em menu_funcionario. Sem permissão = link não aparece + acesso direto retorna erro.</div>
+</div>
+
+<div class="rule-card">
+<h4>🔴 RN-R03 — Status de vendas em 3 estágios</h4>
+<div class="meta"><span class="tag tag-red">Relatório</span><span class="tag tag-red">Crítica</span></div>
+<div class="desc">Igual RN-V01: Aberta, Fechada, Baixada. Relatórios de contas a receber filtram por esses status.</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<div class="sb" style="margin-top:20px">
+<div class="alert-box" style="background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3)"><h4 style="color:var(--orange)">🟠 Altas</h4><p>Essenciais para operação diária. Impacto significativo se perdidas.</p></div>
+<div class="rules-grid">
+
+<div class="rule-card">
+<h4>🟠 RN-A03 — Cadastro de funcionário completo</h4>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Campos obrigatórios: estabelecimento, cargo, nível, nome, sexo, login único por loja, senha MD5, horários, dias úteis.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-A04 — Controle de ponto por horário</h4>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">HoraEntrada, HoraSaida, Almoco + flags dias da semana. Sistema calcula jornada esperada. Usado em caixa_relogio.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-A08 — Classe de acesso granular</h4>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Cada funcionário pode ter múltiplas classes de acesso (funcionario_classe.IdClasseAcesso) complementando o nível básico.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-A10 — Tela principal configurável por funcionário</h4>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">funcionario_tela_principal × tela_principal. Cada funcionário vê conjunto diferente de widgets na tela inicial.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP02 — Flags de forma de pagamento</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Cada FP tem flags booleanas: Aberto, Crediario, CartaoCredito, etc. Uma FP pode ter múltiplas flags simultaneamente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP03 — Taxa por forma de pagamento por loja</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Taxa da FP pode variar por loja em formapagamento_taxa. Usada no fechamento de caixa e conciliação.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP08 — Cálculo de juros por atraso</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Carência + Tipo (PORCENTAGEM/FIXO) + Periodicidade. Fórmula aplica após carência e respeita limites.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP15 — Fluxo de caixa por conta corrente</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">conta_corrente com registros de saldo. Entradas e saídas com Data, Valor, Tipo. Saldo calculado em tempo real.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP20 — Fornecedor: dados fiscais + vínculo plano contas</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Nome, NomeContato, Tipo (DESPESA/PRODUTO), DataCadastro, Ativo. Pode ser reativado se inativo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V03 — Validação de limite de crédito</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Verifica se valor total + saldo existente ultrapassa LimiteCredito. Pode bloquear dependendo do parâmetro.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V04 — Desconto por nível de funcionário</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Nível básico: desconto até LimiteDesconto%. Nível avançado: acima, mediante senha.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V07 — Venda normal (IdTipoVenda = 1)</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Venda padrão à vista ou a prazo. Gera parcelas normais conforme tabela de prazo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V08 — Venda consignada (IdTipoVenda = 5)</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Mercadoria deixada com cliente. Acerto quando vende ou devolve. Estoque permanece da loja até acerto.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V16 — Comissão por cargo × família + meta com bônus</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">comissao_cargo_familia: IdCargo × IdFamilia com Comissao + Bonus. comissao_meta: metas por loja com DataInicial, DataFinal, Meta, Comissao.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V20 — Comissão básica por cargo (comissao)</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Tabela de tipos de comissão (ex: "Comissão 1"). Cada cargo tem vínculo via cargo.IdComissao. Base para cálculo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V21 — Comissão Cargo × Seção com bônus</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">comissao_cargo_secao: Cargo × Seção com Comissao e Bonus. Se NULL = regra genérica.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-V22 — Comissão por fator (fator mínimo/máximo)</h4>
+<div class="meta"><span class="tag tag-orange">Venda</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">comissao_fator: faixas FatorMinimo/FatorMaximo × %comissão. Comissão progressiva conforme volume de vendas.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CL02 — Dados obrigatórios para cadastro</h4>
+<div class="meta"><span class="tag tag-orange">Cliente</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Campos mínimos: Nome, CPF/CNPJ, Endereço, Cidade, Estado, CEP, Telefone. E-mail opcional.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CL03 — Limite de crédito por cliente</h4>
+<div class="meta"><span class="tag tag-orange">Cliente</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Cada cliente tem LimiteCredito. Usado para verificar se venda a prazo ultrapassa limite.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CL07 — Liberação após quitação</h4>
+<div class="meta"><span class="tag tag-orange">Cliente</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Após quitar parcelas em atraso, sistema desbloqueia automaticamente limite de crédito e remove bloqueio.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CX03 — Sangria com limite</h4>
+<div class="meta"><span class="tag tag-orange">Caixa</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Retiradas de dinheiro com Valor, IdConta, Observacao. Acima do limite → senha obrigatória.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CX04 — Fundo de caixa fixo</h4>
+<div class="meta"><span class="tag tag-orange">Caixa</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Valor de fundo configurável que permanece após fechamento. Rateado na abertura do próximo caixa.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CX06 — Entradas e saídas avulsas</h4>
+<div class="meta"><span class="tag tag-orange">Caixa</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Além de vendas: entradas avulsas (recebimento diverso) e saídas avulsas (despesa avulsa). Cada registro tem IdConta para classificação.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CH03 — Não permite cheque duplicado</h4>
+<div class="meta"><span class="tag tag-orange">Cheque</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Não pode existir dois cheques ativos com mesma Conta + Cheque + IdCliente. Validação via query antes do INSERT.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-CX09 — Aceitação de cheque pré-datado</h4>
+<div class="meta"><span class="tag tag-orange">Caixa</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Cheque pré-datado como forma de pagamento. Vinculado à venda e ao cliente. Data de depósito configurável.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-E02 — OF/OS: workflow de estados</h4>
+<div class="meta"><span class="tag tag-orange">Estoque</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Ordens de serviço com workflow próprio. Status com flag TelaPrincipal para aparecer na principalOS.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-E09 — Prestador de serviço vinculado à OS</h4>
+<div class="meta"><span class="tag tag-orange">Estoque</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Ordens de serviço podem ter múltiplos prestadores terceiros (prestador_ordemservico). Rastreável para comissionamento.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-E10 — Ajuste com motivo obrigatório</h4>
+<div class="meta"><span class="tag tag-orange">Estoque</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Todo nota_ajuste exige Motivo e TipoAjuste (E=Entrada, S=Saída). Ajustes sem motivo não permitidos.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OPT01 — Medida de armação com validações geométricas</h4>
+<div class="meta"><span class="tag tag-orange">Óptica</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">4 campos obrigatórios: Ponte, Aro, Diagonal Maior, Vertical. Impede inclusão sem todos campos.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OPT02 — Lente com código de barras e controle de perda</h4>
+<div class="meta"><span class="tag tag-orange">Óptica</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">lente_codigobarra agrupa lentes por produto. acerto_tab_estoque sincroniza com estoque loja 996. lensa_perda registra perdas.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OS01 — Parâmetros de OS + Exclusão + Impressão</h4>
+<div class="meta"><span class="tag tag-orange">OS</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">3 singletons: parametros_ordemservico (BuscaReferencia, LimiteDataPrevista), parametros_exclui_os (senha MD5), parametros_impressao (tipo PDF/TXT por tela).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OS03 — Funcionário autorizado a alterar situação com laboratório</h4>
+<div class="meta"><span class="tag tag-orange">OS</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">alterar_situacaolab define funcionários autorizados a alterar situação do receituário com laboratório (Recebido→Produção→Pronto→Entregue).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-REC02 — Status de laboratório com workflow</h4>
+<div class="meta"><span class="tag tag-orange">Receituário</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Workflow: Recebido → Em produção → Pronto → Entregue. Transição registra IdFuncionario + Data. TelaPrincipal=1 mostra na tela principal.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OPT04 — Cor e tamanho da armação com seletor</h4>
+<div class="meta"><span class="tag tag-orange">Óptica</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">tamanho_armacao: TamanhoArmacao + Cor (hex via colorpicker). N cores por registro. Alteração em lote via tamanho_armacao.php.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-OPT05 — Material da armação com reativação</h4>
+<div class="meta"><span class="tag tag-orange">Óptica</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">material_armacao: Metal, Acetato, Titanium. Se Ativo=0, INSERT atualiza para Ativo=1 em vez de criar duplicata.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP22 — Parametro conta corrente: visibilidade na tela principal</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">parametro_contacorrente singleton tem flag MostrarConta (S/N). Altera Requires nível >= 3 + auditoria.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP27 — Receita bruta do Simples com partilha por loja</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">receita_bruta: faixas com aliquota, IRPJ, CSLL, COFINS, PIS, CPP, ICMS. receita_bruta_loja: vínculo N:1 + flag Selecao. Apenas uma faixa ativa por loja.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP29 — ICMS por UF com partilha</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">icms por UF: aliquota interna, FCP, reduções. Usada no cálculo de ICMS interestadual ou interno para NF-e.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP30 — Classificação fiscal (NCM/CEST)</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">classificacao_fiscal: NCM (8 dígitos), CEST (7 dígitos), descrição. Cada produto pode ter 1 NCM e opcionalmente 1 CEST.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP32 — Portador de cartão/forma de recebimento</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">portador: bancos/administradoras (Cielo, Rede, etc.). Vinculado a forma_pagamento via formapagamento_portador. Essencial para conciliacao_cartao.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP33 — Parametrização de parcelas (singleton)</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">parametros_parcela: prazos disponíveis, periodicidade padrão, tipos de prazo. Distinto de parametros_juros (só juros).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-FP37 — Conta de pagamento com rateio por FP e conta bancária</h4>
+<div class="meta"><span class="tag tag-orange">Financeiro</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">conta_pagamento: junction para rateio de despesa por conta bancária e forma de pagamento. Rastreabilidade completa do pagamento.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-E12 — Pedido de compra com geração automática de NF</h4>
+<div class="meta"><span class="tag tag-orange">Estoque</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Ao receber pedido de compra, sistema pode gerar automaticamente nota_fiscal de entrada via IdPedidoCompra.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-R02 — Filtro por loja via sessão</h4>
+<div class="meta"><span class="tag tag-orange">Relatório</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Relatórios filtram por $funcionario[idloja] da sessão. Funcionários só veem dados da loja lotada.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-R04 — Juros por carência</h4>
+<div class="meta"><span class="tag tag-orange">Relatório</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">Relatórios de cobrança usam parametros_juros para calcular: dias carência, tipo (PORCENTAGEM/FIXO), periodicidade.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-REL01 — Atributos de relojoaria</h4>
+<div class="meta"><span class="tag tag-orange">Relojoaria</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">cor_mostrador, funcionamento_relogio, caixa_relogio, marca_relogio, pulseira_relogio, modelo_relogio. Cada um com Descricao + Ativo + auditoria.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟠 RN-A11 — Permissões granulares de menu por funcionário</h4>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
+<div class="desc">menu_funcionario: IdMenu × IdFuncionario com Ativo=1. Sem permissão = link não aparece + URL direta retorna erro.</div>
+</div>
+
+</div>
+</div>
+
+<div class="sb" style="margin-top:20px">
+<div class="alert-box" style="background:rgba(234,179,8,.1);border-color:rgba(234,179,8,.3)"><h4 style="color:var(--yellow)">🟡 Médias</h4><p>Importantes para controle, mas com workaround se perdidas.</p></div>
+<div class="rules-grid">
+
+<div class="rule-card">
+<h4>🟡 RN-A05 — Reativação de registros inativos</h4>
+<div class="meta"><span class="tag tag-yellow">Admin</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Se cargo/fornecedor está inativo (Ativo=0), reativar definindo Ativo=1 em vez de criar novo. Evita duplicidade.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-A06 — Verificação de login único por loja</h4>
+<div class="meta"><span class="tag tag-yellow">Admin</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Impede dois funcionários da mesma loja com mesmo Login. Validação via query antes do INSERT.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-A09 — Referências profissionais do funcionário</h4>
+<div class="meta"><span class="tag tag-yellow">Admin</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Até 3 referências profissionais por funcionário: empresa, telefone, observações.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP04 — Comissão percentual por FP</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Cada FP pode ter Comissao percentual que incide sobre a venda. Usada no cálculo de comissões.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP09 — Baixa de parcela com reconciliação</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Ao receber parcela, sistema reconcilia com venda original. Valor pago pode ser menor ou maior (juros/multa ou desconto).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP12 — Despesas fixas e variáveis</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Despesas fixas têm Periodicidade e se repetem. Variáveis são cadastradas manualmente por período.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E03 — Hierarquia Seção→Família→Subfamília→Produto</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">4 níveis de organização. Produto herda características do nível superior por padrão.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E04 — Grade de produto</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">produto_id + grade_id + gradeopcao_id. Estoque controlado por combinação específica de grade.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E09 — Transferência com fechamento obrigatório</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Transferência aberta pela origem e confirmada pela destino. Estoque decrementado após fechamento.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E11 — Inventário com reconciliação</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">nota_inventario compara estoque contável (sistema) com real (contagem). Divergências geram nota_ajuste automáticos.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E13 — Composição de produto (kit)</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">produto.IdProdutoPai. Ao vender o pai, sistema decrementa componentes. Estoque de componentes gerenciado separadamente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-E14 — Desmembramento de lente</h4>
+<div class="meta"><span class="tag tag-yellow">Estoque</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Lente comprada pode virar várias vendáveis após corte. conversao_lente com ajuste de estoque.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V05 — Bloqueio de venda para clientes bloqueados</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Clientes com IdTipoBloqueio definido (SPC, inadimplente) não podem comprar a prazo. Limitado a dinheiro/cartão.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V06 — Comissionamento do vendedor</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Percentual varia por: cargo.Comissao (base), forma_pagamento.Comissao (por FP), tabela_venda.Comissao (por prazo).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V09 — Carnê (venda a prazo com carnê impresso)</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Vendas a prazo podem gerar carnê para entrega física. Parcelas com vencimento, valor e código de barras.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V13 — Devolução parcial com cálculo proporcional</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Cálcula valor proporcional do item devolvido. Gera crédito para cliente (vale ou abatido em parcelas).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V14 — Cancelamento deOS por prazo</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">OS tem prazo de entrega. Se expirar sem finalização, sistema alerta. Cancelamento com justificativa.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V18 — Cancelamento de acerto de caixa exige nível 3</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">acertoCaixa.php cancelável apenas por nível >= 3. Motivo obrigatório em ambos (acerto e caixinha).</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V19 — Cancelamento com auditoria completa</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Toda operação cancelável gera registro em *_cancelada com: IdOperacao, IdFuncionario, IdLoja, Data, Hora, Motivo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-V23 — Comissão por prazo × desconto</h4>
+<div class="meta"><span class="tag tag-yellow">Venda</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">comissao_prazo_desconto: tabela cruzando prazo × %desconto → %comissão. Usado em consultaComissaoPrazoDesconto.php.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CX07 — Acerto de caixa</h4>
+<div class="meta"><span class="tag tag-yellow">Caixa</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Compara valor esperado (saldo + vendas - retiradas) com valor real contado. Divergências com Observacao + aprovação.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL04 — Classificação por perfil</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">perfis (básico,VIP,atacadista) e acao_cliente determinam comportamento do sistema e políticas de desconto.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL08 — Histórico de alterações de status</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Toda alteração (ativo/inativo, bloqueio/desbloqueio) registrada em cliente_status com IdFuncionario, Data, Motivo.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL10 — Vale crédito para devolução</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Devolução gera "vale" — crédito no cadastro para compras futuras. Tem valor e validade.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL13 — Dependentes do cliente</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Até 5 dependentes por cliente: nome e data de nascimento. Podem estar autorizados a comprar em nome do titular.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL14 — Dados do cônjuge (SPC)</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Nome, CPF, RG, data nascimento, telefone, renda. Usados em declarações de SPC e cobranças.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL15 — Perfis e ações de cobrança</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Múltiplos perfis (VIP,atacadista,básico) e ações de cobrança (1ª cobrança, protesto, etc.). Determinam políticas.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL16 — Upload de documentos do cliente</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">RG, CPF, comprovante de residência via upload. Arquivos em disco com caminho no banco.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL17 — Categoria do cliente (F/J/S/N)</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">F=Pessoa Física, J=Pessoa Jurídica, S=Serviço (sem CPF), N=Sem documento. Cada tipo exige campos específicos.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-CL18 — Ações de cobrança por cliente</h4>
+<div class="meta"><span class="tag tag-yellow">Cliente</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">acao_cliente: SPC, protesto, devedor, reabilitado. Com DataCadastro + IdFuncionario + IdCliente. Histórico por cliente.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-COB03 — Tabela temporária de cobrança</h4>
+<div class="meta"><span class="tag tag-yellow">Cobrança</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">cliente_atraso como tabela temporária de trabalho. Não é fonte de verdade — dados vêm de venda/parcela.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-R05 — Verificação de cupom fiscal via arquivo</h4>
+<div class="meta"><span class="tag tag-yellow">Relatório</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">Compara IDs de venda com arquivos .ORC em bancodedados/ecf/. Vendas sem cupom marcadas Cupom='N'.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP25 — Parametrização de notas fiscais e cupom fiscal</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">parametros_nota (CaminhoArquivo, Existe) + parametro_cupomfiscal (por loja: JetLoja, Solucao). Ambos com auditoria.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP26 — Parametrização de entrada de mercadorias</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">parametros_entrada singleton: flags theEntrada, EncerraNota, EncerraDivergencia + mapeamentos de tabelas AJAX.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP31 — Histórico de cotação de moeda por seção</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">historico_cotacao: IdMoeda × IdSecao × IdLoja × Data. Variação de preço por seção e loja.</div>
+</div>
+
+<div class="rule-card">
+<h4>🟡 RN-FP36 — Moeda compra e venda separadas</h4>
+<div class="meta"><span class="tag tag-yellow">Financeiro</span><span class="tag tag-yellow">Média</span></div>
+<div class="desc">moeda_compra e moeda_venda: cadastro separado+ histórico de câmbio. Usado para cálculo de custo (moeda_compra) e preço de venda (moeda_venda) com conversões independentes.</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer style="text-align:center;padding:24px;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);margin-top:8px">
+<p>🏛️ GoldSystem ERP Migration &nbsp;|&nbsp; 153 tasks · 13 fases · 295h &nbsp;|&nbsp; Atualizado 26/06/2026 15:10 GMT-3</p>
+<p>Repos: <strong>goldsystem-api</strong> + <strong>goldsystem-web</strong> &nbsp;|&nbsp; Stack: Laravel 13 · React 19 · MySQL 8 · Sanctum · Spatie · Horizon</p>
+</footer>
+
+</div>
+</body>
+</html>
