@@ -354,8 +354,8 @@ tr:hover td{background:rgba(99,102,241,.04)}
 
 <div class="rule-card">
 <h4>🔴 RN-A01 — Controle de acesso por nível</h4>
-<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span></div>
-<div class="desc">3 níveis de acesso: Nível 1 (básico), Nível 2 (normal), Nível 3 (avançado). Cada tela verifica nível antes de exibir. Nível 3 = operações administrativas sensíveis.</div>
+<div class="meta"><span class="tag tag-red">Admin</span><span class="tag tag-red">Crítica</span><span class="tag tag-purple">spatie/laravel-permission</span></div>
+<div class="desc"><strong>Consolidado com RN-A08.</strong> 3 níveis de acesso (Nível 1/2/3) implementados via <code>spatie/laravel-permission</code>. Roles: admin, gerente, vendedor. Permissions granulares via seeder (dados, não código). Cada tela verifica nível/Permission antes de exibir.</div>
 </div>
 
 <div class="rule-card">
@@ -638,8 +638,8 @@ tr:hover td{background:rgba(99,102,241,.04)}
 
 <div class="rule-card">
 <h4>🟠 RN-A08 — Classe de acesso granular</h4>
-<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span></div>
-<div class="desc">Cada funcionário pode ter múltiplas classes de acesso (funcionario_classe.IdClasseAcesso) complementando o nível básico.</div>
+<div class="meta"><span class="tag tag-orange">Admin</span><span class="tag tag-orange">Alta</span><span class="tag tag-purple">spatie/laravel-permission</span></div>
+<div class="desc"><strong>Consolidado com RN-A01.</strong> Funcionalidade absorvida pelo spatie: múltiplas roles por usuário via <code>assignRole()</code>. Permissões granulares via <code>givePermissionTo()</code> + seeder de roles/permissions.</div>
 </div>
 
 <div class="rule-card">
